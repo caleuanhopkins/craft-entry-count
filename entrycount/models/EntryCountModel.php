@@ -1,11 +1,19 @@
 <?php
-namespace Craft;
+namespace craft\plugins\entrycount\models;
+
+use craft\app\base\Model;
 
 /**
  * Entry Count Model
  */
-class EntryCountModel extends BaseModel
+class EntryCountModel extends Model
 {
+    public $id;
+    public $entryId;
+    public $count;
+    public $dateCreated;
+    public $dateUpdated;
+
     /**
      * Define what is returned when model is converted to string
      *
@@ -16,19 +24,14 @@ class EntryCountModel extends BaseModel
         return (string)$this->count;
     }
 
-    /**
-     * Define model attributes
-     *
-     * @return array
-     */
-    public function defineAttributes()
+    public function rules()
     {
-        return array(
-            'id' => AttributeType::Number,
-            'entryId' => AttributeType::Number,
-            'count' => array(AttributeType::Number, 'default' => 0),
-            'dateCreated' => AttributeType::DateTime,
-            'dateUpdated' => AttributeType::DateTime,
-        );
+        return [
+            ['id', 'int'],
+            ['entryId', 'int'],
+            ['count', 'int', 'default' => 0],
+            ['dateCreated', 'datetime'],
+            ['dateUpdated', 'datetime'],
+        ];
     }
 }

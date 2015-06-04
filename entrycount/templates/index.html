@@ -2,7 +2,7 @@
 
 {% set title = "Entry Count"|t %}
 
-{% set entries = craft.entryCount.entries %}
+{% set entries = craft.entrycount.entries %}
 
 
 {% block content %}
@@ -21,7 +21,7 @@
             </thead>
             <tbody>
             {% for entry in entries %}
-                {% set count = craft.entryCount.count(entry.id) %}
+                {% set count = craft.entrycount.count(entry.id) %}
                 <tr>
                     <td>
                         <a href="{{ url('entries/' ~ entry.section.handle ~ '/' ~ entry.id ~ '-' ~ entry.slug) }}">

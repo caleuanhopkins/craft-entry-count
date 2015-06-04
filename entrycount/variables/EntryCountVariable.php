@@ -1,5 +1,7 @@
 <?php
-namespace Craft;
+namespace craft\plugins\entrycount\variables;
+
+use craft\plugins\entrycount\services\EntryCountService;
 
 /**
  * Entry Count Variable
@@ -15,7 +17,7 @@ class EntryCountVariable
      */
     public function getCount($entryId)
     {
-        return craft()->entryCount->getCount($entryId);
+        return EntryCountService::getCount($entryId);
     }
 
     /**
@@ -25,7 +27,7 @@ class EntryCountVariable
      */
     public function getEntries()
     {
-        return craft()->entryCount->getEntries();
+        return EntryCountService::getEntries();
     }
 
     /**
@@ -35,7 +37,7 @@ class EntryCountVariable
      */
     public function increment($entryId)
     {
-        craft()->entryCount->increment($entryId);
+        EntryCountService::increment($entryId);
     }
 
 }

@@ -1,10 +1,14 @@
 <?php
-namespace Craft;
+namespace craft\plugins\entrycount\controllers;
+
+use Craft;
+use craft\app\web\Controller;
+use craft\plugins\entrycount\services\EntryCountService;
 
 /**
  * Entry Count Controller
  */
-class EntryCountController extends BaseController
+class EntryCountController extends Controller
 {
     /**
      * Reset count
@@ -13,9 +17,9 @@ class EntryCountController extends BaseController
     {
         $entryId = craft()->request->getRequiredParam('entryId');
 
-        craft()->entryCount->reset($entryId);
+        EntryCountService::reset($entryId);
 
-        craft()->userSession->setNotice(Craft::t('Entry count reset.'));
+        Craft::$app->getSession()->setNotice(Craft::t('Entry count reset.'));
 
         $this->redirect('entrycount');
     }

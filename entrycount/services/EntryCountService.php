@@ -1,10 +1,16 @@
 <?php
-namespace Craft;
+namespace craft\plugins\entrycount\services;
+
+use Craft;
+use craft\app\base\Component;
+use craft\app\elements\Entry;
+use craft\plugins\entrycount\records\EntryCountRecord;
+use craft\plugins\entrycount\models\EntryCountModel;
 
 /**
  * Entry Count Service
  */
-class EntryCountService extends BaseApplicationComponent
+class EntryCountService extends Component
 {
     /**
      * Returns count
@@ -13,18 +19,20 @@ class EntryCountService extends BaseApplicationComponent
 	 *
 	 * @return EntryCountModel
      */
-    public function getCount($entryId)
+    public static function getCount($entryId)
     {
         // create new model
         $entryCountModel = new EntryCountModel();
 
         // get record from DB
-        $entryCountRecord = EntryCountRecord::model()->findByAttributes(array('entryId' => $entryId));
+        $entryCountRecord = EntryCountRecord::find()
+            ->where(['entryId' => $entryId])
+            ->one();
 
         if ($entryCountRecord)
         {
             // populate model from record
-            $entryCountModel = EntryCountModel::populateModel($entryCountRecord);
+            static::populateModel($entryCountModel, $entryCountRecord);
         }
 
         return $entryCountModel;
@@ -35,12 +43,12 @@ class EntryCountService extends BaseApplicationComponent
      *
      * @return ElementCriteriaModel
      */
-    public function getEntries()
+    public static function getEntries()
     {
         // get all records from DB ordered by count descending
-        $entryCountRecords = EntryCountRecord::model()->findAll(array(
-            'order'=>'count desc'
-        ));
+        $entryCountRecords = EntryCountRecord::find()
+            ->orderBy('count desc')
+            ->all();
 
         // get entry ids from records
         $entryIds = array();
@@ -51,7 +59,7 @@ class EntryCountService extends BaseApplicationComponent
         }
 
         // create criteria for entry element type
-        $criteria = craft()->elements->getCriteria('Entry');
+        $criteria = Entry::find();
 
         // filter by entry ids
         $criteria->id = $entryIds;
@@ -67,21 +75,23 @@ class EntryCountService extends BaseApplicationComponent
      *
 	 * @param int $entryId
      */
-    public function increment($entryId)
+    public static function increment($entryId)
     {
         // check if action should be ignored
-        if ($this->_ignoreAction())
+        if (EntryCountService::_ignoreAction())
         {
             return;
         }
 
         // get record from DB
-        $entryCountRecord = EntryCountRecord::model()->findByAttributes(array('entryId' => $entryId));
+        $entryCountRecord = EntryCountRecord::find()
+            ->where(['entryId' => $entryId])
+            ->one();
 
         // if exists then increment count
         if ($entryCountRecord)
         {
-            $entryCountRecord->setAttribute('count', $entryCountRecord->getAttribute('count') + 1);
+            $entryCountRecord->setAttribute('count', $entryCountRecord->count + 1);
         }
 
         // otherwise create a new record
@@ -101,10 +111,12 @@ class EntryCountService extends BaseApplicationComponent
      *
 	 * @param int $entryId
      */
-    public function reset($entryId)
+    public static function reset($entryId)
     {
         // get record from DB
-        $entryCountRecord = EntryCountRecord::model()->findByAttributes(array('entryId' => $entryId));
+        $entryCountRecord = EntryCountRecord::find()
+            ->where(['entryId' => $entryId])
+            ->one();
 
         // if record exists then delete
         if ($entryCountRecord)
@@ -115,7 +127,7 @@ class EntryCountService extends BaseApplicationComponent
 
         // log reset
         EntryCountPlugin::log(
-            'Entry count with entry ID '.$entryId.' reset by '.craft()->userSession->getUser()->username,
+            'Entry count with entry ID '.$entryId.' reset by '.Craft::$app->getUser()->username,
             LogLevel::Info,
             true
         );
@@ -129,7 +141,7 @@ class EntryCountService extends BaseApplicationComponent
      *
      * @param Event $event
      */
-    public function onResetCount($event)
+    public static function onResetCount($event)
     {
         $this->raiseEvent('onResetCount', $event);
     }
@@ -140,19 +152,19 @@ class EntryCountService extends BaseApplicationComponent
     /**
      * Check if action should be ignored
      */
-    private function _ignoreAction()
+    private static function _ignoreAction()
     {
         // get plugin settings
-        $settings = craft()->plugins->getPlugin('entryCount')->getSettings();
+        $settings = Craft::$app->plugins->getPlugin('entrycount')->getSettings();
 
         // check if logged in users should be ignored based on settings
-        if ($settings->ignoreLoggedInUsers AND craft()->userSession->isLoggedIn())
+        if ($settings->ignoreLoggedInUsers AND Craft::$app->getUser()->isLoggedIn())
         {
             return true;
         }
 
         // check if ip address should be ignored based on settings
-        if ($settings->ignoreIpAddresses AND in_array(craft()->request->getIpAddress(), explode("\n", $settings->ignoreIpAddresses)))
+        if ($settings->ignoreIpAddresses AND in_array(Craft::$app->request->getUserIP(), explode("\n", $settings->ignoreIpAddresses)))
         {
             return true;
         }
