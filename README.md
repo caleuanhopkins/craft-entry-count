@@ -1,5 +1,7 @@
 #Entry Count Plugin (for Craft 3)
 
+*Note that this branch is a development version for Craft 3 and is not guaranteed to work!!*
+
 The Entry Count Plugin was built specifically for training purposes and is used in the [Craft Plugin Development video course](https://mijingo.com/products/screencasts/craft-plugin-development/).
 
 It allows you to count and display the number of times that an entry has been viewed.
