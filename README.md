@@ -19,7 +19,7 @@ It allows you to count and display the number of times that an entry has been vi
     {% set countedEntries = craft.entrycount.entries %}
 
     {% for entry in entries %}
-        {% set count = craft.entryCount.count(entry.id) %}
+        {% set count = craft.entrycount.count(entry.id) %}
         {{ entry.title }} ({{ count }} views)
     {% endfor %}
 
