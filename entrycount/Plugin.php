@@ -9,11 +9,6 @@ use craft\plugins\entrycount\models\Settings;
  */
 class Plugin extends \craft\app\base\Plugin
 {
-    public function init()
-    {
-        Craft::$app->createController('EntryCountController');
-    }
-
     protected function createSettingsModel()
     {
         return new Settings();
@@ -36,8 +31,8 @@ class Plugin extends \craft\app\base\Plugin
         return 'craft\plugins\entrycount\variables\EntryCountVariable';
     }
 
-	// Hooks
-	// =========================================================================
+    // Hooks
+    // =========================================================================
 
     public function modifyEntryTableAttributes(&$attributes, $source)
     {
