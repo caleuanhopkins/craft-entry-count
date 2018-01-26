@@ -1,0 +1,55 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Entry Count"|t %}
+
+{% set entries = craft.entryCount.entries %}
+
+
+{% block content %}
+
+    {% if entries.total %}
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th>{{ "Entry"|t }}</th>
+                    <th>{{ "URL"|t }}</th>
+                    <th>{{ "Count"|t }}</th>
+                    <th>{{ "First Count"|t }}</th>
+                    <th>{{ "Last Count"|t }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entry in entries %}
+                {% set count = craft.entryCount.count(entry.id, entry.elementType) %}
+                <tr>
+                    <td>
+                        <a href="/admin/commerce/products/{{entry.type}}/{{entry.id}}-{{entry.slug}}">
+                            {{ entry.title }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if entry.url %}
+                            <a href="{{ entry.url }}" class="go" target="_blank">
+                                {{ entry.uri }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ count }}
+                    </td>
+                    <td>
+                        {{ count.dateCreated }}
+                    </td>
+                    <td>
+                        {{ count.dateUpdated }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {{ "No entries counted"|t }}
+    {% endif %}
+
+{% endblock %}
